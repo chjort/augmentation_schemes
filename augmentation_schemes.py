@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow.keras.layers.experimental import preprocessing
 from tensorflow.python.keras.engine.input_spec import InputSpec
 
-import image_augmentations
+import augmentations
 
 _INTERPOLATION_MODE = "nearest"
 _FILL_MODE = "constant"
@@ -122,7 +122,7 @@ def _get_transform(transform_name, magnitude):
         "Rotate": _magnitude_to_rotate_kwargs,
     }
 
-    transform = getattr(image_augmentations, transform_name)
+    transform = getattr(augmentations, transform_name)
     kwarg_fn = magnitude_fn_map[transform_name]
     kwargs = kwarg_fn(magnitude)
     return transform(**kwargs)
@@ -137,13 +137,13 @@ class AutoAugment(preprocessing.PreprocessingLayer):
         self.transforms = [
             tf.keras.Sequential(
                 [
-                    image_augmentations.RandomChance(_get_transform(t1, m1), p1),
-                    image_augmentations.RandomChance(_get_transform(t2, m2), p2),
+                    augmentations.RandomChance(_get_transform(t1, m1), p1),
+                    augmentations.RandomChance(_get_transform(t2, m2), p2),
                 ]
             )
             for (t1, p1, m1), (t2, p2, m2) in _AUTO_AUGMENT_POLICY_V0
         ]
-        self._transform = image_augmentations.RandomChoice(
+        self._transform = augmentations.RandomChoice(
             self.transforms, n_transforms=1, elementwise=elementwise
         )
         self.input_spec = InputSpec(ndim=4)
@@ -186,7 +186,7 @@ class RandAugment(preprocessing.PreprocessingLayer):
             _get_transform("CutOut", magnitude),
             _get_transform("Rotate", magnitude),
         ]
-        self._transform = image_augmentations.RandomChoice(
+        self._transform = augmentations.RandomChoice(
             self.transforms, n_transforms=n_transforms, elementwise=elementwise
         )
         self.input_spec = InputSpec(ndim=4)
