@@ -146,7 +146,7 @@ class AutoAugment(preprocessing.PreprocessingLayer):
         self._transform = augmentations.RandomChoice(
             self.transforms, n_transforms=1, elementwise=elementwise
         )
-        self.input_spec = InputSpec(ndim=4)
+        self.input_spec = InputSpec(ndim=4, dtype=tf.uint8)
 
     def call(self, inputs, **kwargs):
         return self._transform(inputs)
@@ -189,7 +189,7 @@ class RandAugment(preprocessing.PreprocessingLayer):
         self._transform = augmentations.RandomChoice(
             self.transforms, n_transforms=n_transforms, elementwise=elementwise
         )
-        self.input_spec = InputSpec(ndim=4)
+        self.input_spec = InputSpec(ndim=4, dtype=tf.uint8)
 
     def call(self, inputs, **kwargs):
         return self._transform(inputs)
